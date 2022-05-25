@@ -1,4 +1,5 @@
 ﻿@using RealEstateAgencyService.ViewModels
+@using System.Globalization
 @{
     ViewData["Title"] = "Главная страница";
     Layout = "_LayoutMap";
@@ -51,13 +52,11 @@
             @{
                 counter = 1;
             }
-    
-            <div class = "description">
-                <div class="price">@item.Listing.Price</div>
-                <div>@item.Listing.Rooms-комн. квартира, @item.Listing.Space м², @item.Listing.Floor этаж</div>
-                <div class = "address">@item.Listing.City, @item.Listing.Street, @item.Listing.Building</div>
-                <a class = "btn btn-primary" href = "~/Home/Listing/@item.Listing.Id">Открыть объявление</a>
-            </div>
+            <h5 class="card-title price me-auto p-2">@item.Listing.Price</h5>
+            <p class="card-text">@item.Listing.Rooms-комн. квартира, @item.Listing.Space м², @item.Listing.Floor этаж</p>
+            <p class="card-text address">@item.Listing.City, @item.Listing.Street, @item.Listing.Building</p>
+            <p class="card-text"><small class="text-muted">Дата добавления: @item.Listing.Created.ToString("dd MMM yyyy", new CultureInfo("ru-RU"))</small></p>
+            <a class = "btn btn-primary card-text" href = "~/Home/Listing/@item.Listing.Id">Открыть объявление</a>
         </div>
     </div>
 }
@@ -211,6 +210,8 @@
         let rubleRussia = Intl.NumberFormat("ru-RU", {
             style: "currency",
             currency: "RUB",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
         });
 
         const price = document.getElementsByClassName("price");
