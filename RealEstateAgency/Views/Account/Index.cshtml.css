@@ -1,0 +1,30 @@
+﻿
+.fa-solid {
+    color: dimgrey;
+    --fa-animation-duration: 0s;
+}
+
+.fa-solid:hover {
+    --fa-animation-duration: 1s;
+}
+
+.fa-eye-slash:hover {
+    color: forestgreen;
+}
+.fa-eye:hover {
+    color: black;
+}
+.fa-pen-to-square:hover {
+    color: dodgerblue;
+}
+.fa-trash:hover {
+    color: red;
+} 
+
+.card {
+    margin: 16px;
+}
+
+.price {
+    padding-left: 0 !important;
+}

@@ -1,0 +1,125 @@
+﻿@using RealEstateAgencyService.Models
+@using RealEstateAgencyService.ViewModels
+@using System.Globalization
+@{
+    ViewData["Title"] = "Личный кабинет";
+}
+ @model User;
+<script src="https://kit.fontawesome.com/d1ac7949f1.js" crossorigin="anonymous"></script>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Данные о пользователе</h5>
+            <form method="post" asp-controller="Account" asp-action="UpdateUser">
+                <div class="row mb-3">
+
+                    <div class="form-group col" hidden>
+                        @Html.LabelFor(m => m.Id, "Идентификатор")
+                        @Html.TextBoxFor(m => m.Id, new { @class = "form-control", @type = "text", @Value = Model.Id})
+                    </div>
+
+                    <div class="form-group col">
+                        @Html.LabelFor(m => m.FirstName, "Имя")
+                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", @type = "text", @Value = Model.FirstName})
+                    </div>
+            
+                     <div class="form-group col">
+                        @Html.LabelFor(m => m.LastName, "Фамилия")
+                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", @type = "text", @Value = Model.LastName})
+                    </div>
+
+                </div>
+                <div class="row mb-3">
+
+                    <div class="form-group col">
+                        @Html.LabelFor(m => m.Email, "Почта")
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @type = "email", @required = "required", @disabled="disabled", @Value = Model.Email})
+                    </div>
+          
+                    <div class="form-group col">
+                        @Html.LabelFor(m => m.PhoneNumber, "Номер телефона")
+                        @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", @type = "text", @Value = Model.PhoneNumber})
+                    </div>
+
+                </div>
+                <div class="d-inline mb-3">
+                    <button type="submit" class="btn btn-primary float-right">Обновить Данные</button>
+                </div>
+            </form>
+            <form method="post" asp-controller="Account" asp-action="Logout">
+                <button class = "btn btn-danger" type="submit">Выход</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Список ваших объявлений</h5>
+            @if (Model.Listings.Count != 0)
+            {
+                @foreach (var item in Model.Listings)
+                {
+                    <div class="card mb-3" onclick="location.href='Home/Listing/@item.Id';" style="cursor: pointer;">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img class="img-fluid rounded-start" src="data:image;base64,@Convert.ToBase64String(item.RealEstatePhotos.FirstOrDefault().Photo)">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <h5 class="card-title price me-auto p-2">@item.Price</h5>
+                                        @if (item.ListingStatusId == 1)
+                                        {
+                                            <a class="p-2" href = "~/Home/ChangeVisability/@item.Id"><i class="fa-solid fa-lg fa-eye-slash fa-flip"></i></a>
+                                        }
+                                        else
+                                        {
+                                            <a class="p-2" href = "~/Home/ChangeVisability/@item.Id"><i class="fa-solid fa-lg fa-eye fa-flip"></i></a>
+                                        }
+                                        <a class="p-2" href = "~/Home/UpdateListing/@item.Id"><i class="fa-solid fa-lg fa-pen-to-square fa-beat"></i></a>
+                                        <a class="p-2" href = "~/Home/RemoveListing/@item.Id"><i class="fa-solid fa-lg fa-trash fa-bounce"></i></a>
+                                    </div>
+
+                                    <p class="card-text">@item.Rooms-комн. квартира, @item.Space м², @item.Floor этаж</p>
+                                    <p class="card-text">@item.City, @item.Street, @item.Building</p>
+                                    <p class="card-text"><small class="text-muted">Дата добавления: @item.Created.ToString("dd MMM yyyy", new CultureInfo("ru-RU"))</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Объявления отсутствуют</p>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <a class = "btn btn-primary" asp-controller="Account" asp-action="Login">Вход</a>
+    <a class = "btn btn-primary" asp-controller="Account" asp-action="Register">Регистрация</a>
+}
+
+<script>
+
+    formatPrice();
+
+    function formatPrice() {
+        let rubleRussia = Intl.NumberFormat("ru-RU", {
+            style: "currency",
+            currency: "RUB",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        });
+
+        const price = document.getElementsByClassName("price");
+
+        for (let step = 0; step < price.length; step++) {
+            price[step].innerHTML = rubleRussia.format(price[step].innerHTML.slice(0, -5));
+        }
+    }
+</script>

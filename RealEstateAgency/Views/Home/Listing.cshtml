@@ -1,0 +1,133 @@
+﻿@using RealEstateAgencyService.ViewModels
+@using System.Collections.Specialized
+@{
+    ViewData["Title"] = "Купить";
+    int counter = 1;
+}
+
+@model ListingModel;
+
+<script src="https://code.jquery.com/jquery-3.4.0.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVxydMVf1Hr-oNZkBCgPGFp-JXKgAFOQg"></script>
+
+<div class = "container">
+    <p class ="name">@Model.User.FirstName </p>
+    <p><button class = "btn btn-success" id = "phone">Показать номер телефона</button></p>
+    
+    <div class="slideshow-container">
+        @foreach (var item in Model.RealEstatePhotos)
+        {
+            <div class="mySlides">
+                <div class="numbertext rounded border border-light">@counter / @Model.RealEstatePhotos.Count</div>
+                <img src="data:image;base64,@Convert.ToBase64String(item.Photo)" style="width: 100%; height: 400px; object-fit: contain;">
+            </div>
+        counter++;
+        }   
+        <a class="prev" onclick="plusSlides(-1)">❮</a>
+        <a class="next" onclick="plusSlides(1)">❯</a>
+
+    </div>
+    @{
+        counter = 1;
+    }
+    <div style="text-align:center">
+    @foreach (var item in Model.RealEstatePhotos)
+    {
+        <span class="dot" onclick="currentSlide(@counter)"></span>
+        counter++;
+    }
+    </div>
+
+    <div class="price">@Model.Listing.Price</div>
+    <div>@Model.Listing.Rooms-комн. квартира, @Model.Listing.Space м², @Model.Listing.Floor этаж</div>
+    <div id='address'>@Model.Listing.City, @Model.Listing.Street, @Model.Listing.Building</div>
+
+    <div id="googleMap" style="width:100%;height:400px;"></div>
+</div>
+
+<script>
+
+    var api = '9f39ce43-5ffb-4983-afbd-9543d1332601';
+    var map;
+    var address = document.getElementById('address').innerHTML;
+    address = address.replace(/\s/g, '');
+    
+    var apiString = 'https://geocode-maps.yandex.ru/1.x/?apikey='+api+'&format=json&geocode=' + address;
+
+    let response = fetch(apiString).then((response) => {
+    return response.json(); })
+    .then( (data) => {
+        let str = data.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos + '';
+        initMap(str);
+    })
+    .then(data => obj = data);
+
+    function initMap(str) {
+        const myArray = str.split(" ");
+        let ln = parseFloat(myArray[0]);
+        let la = parseFloat(myArray[1]);
+
+        map = new google.maps.Map(document.getElementById('googleMap'), {        
+            zoom: 18,
+            center: {lat: la, lng: ln}
+        });
+        console.log(str);
+        var marker = new google.maps.Marker({position: {lat: la, lng: ln}});
+        marker.setMap(map);   
+    }
+
+    $('#phone').click(function () {
+        var fullName = '@Model.User.Id';
+        $.ajax({
+            type: 'GET',
+            data: { id: fullName},
+            url: '/Home/OnGetPhone?handler=Phone',
+            success: function (result) {
+                $('#phone').html(result);
+            }
+        });
+    });
+
+    let rubleRussia = Intl.NumberFormat("ru-RU", {
+        style: "currency",
+        currency: "RUB",
+    });
+
+    const price = document.getElementsByClassName("price");
+
+    for (let step = 0; step < price.length; step++) {
+        price[step].innerHTML = rubleRussia.format(price[step].innerHTML.slice(0, -5));
+    }
+
+    let slideIndex = 1;
+
+    showSlides(slideIndex);
+
+    function plusSlides(n) {
+        showSlides(slideIndex += n);
+    }
+
+    function currentSlide(n) {
+        showSlides(slideIndex = n);
+    }
+    
+    function showSlides(n) {
+        let i;
+        let slides = document.getElementsByClassName("mySlides");
+        let dots = document.getElementsByClassName("dot");
+        if (n > slides.length) {
+            slideIndex = 1
+        }    
+        if (n < 1) {
+            slideIndex = slides.length
+        }
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";  
+        }
+        for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+        }
+        slides[slideIndex-1].style.display = "block";  
+        dots[slideIndex-1].className += " active";
+    }
+</script>

@@ -1,0 +1,113 @@
+﻿@using System.Security.Claims
+@using RealEstateAgencyService.Models
+@using RealEstateAgencyService.ViewModels
+
+@model ListAndPhotosViewModel;
+
+<script src="https://code.jquery.com/jquery-3.4.0.js"></script>
+
+@using (Html.BeginForm("PostListing", "Home", FormMethod.Post, new { enctype="multipart/form-data"}))
+{
+
+    <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Адрес</h5>
+                <div class="row">
+                    <div class="form-group col">
+                        @Html.LabelFor(m => m.Listing.Region, "Область")
+                        @Html.TextBoxFor(m => m.Listing.Region, new { @class = "form-control", @type = "text", @required = "required" })
+                    </div>
+    
+                    <div class="form-group col">
+                        @Html.LabelFor(m => m.Listing.City, "Город")
+                        @Html.TextBoxFor(m => m.Listing.City, new { @class = "form-control", @type = "text", @required = "required" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col">
+                        @Html.LabelFor(m => m.Listing.Street, "Улица")
+                        @Html.TextBoxFor(m => m.Listing.Street, new { @class = "form-control", @type = "text", @required = "required" })
+                    </div>
+
+                    <div class="form-group col">
+                        @Html.LabelFor(m => m.Listing.Building, "Номер здания")
+                        @Html.TextBoxFor(m => m.Listing.Building, new { @class = "form-control", @type = "text", @required = "required" })
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Параметры</h5>
+                <div class="row">
+                    <div class="form-group col">
+                        @Html.LabelFor(m => m.Listing.Price, "Стоимость квартиры")
+                        @Html.TextBoxFor(m => m.Listing.Price, new { @class = "form-control", @type="number", @required = "required" })
+                    </div> 
+                </div>
+                <div class="row">
+                    <div class="form-group col">
+                        @Html.LabelFor(m => m.Listing.Rooms, "Количество комнат")
+                        @Html.TextBoxFor(m => m.Listing.Rooms, new { @class = "form-control", @type="number", @required = "required" })
+                    </div>
+                    <div class="form-group col">
+                        @Html.LabelFor(m => m.Listing.Space, "Площадь квартиры")
+                        @Html.TextBoxFor(m => m.Listing.Space, new { @class = "form-control", @type = "number", @required = "required" })
+                    </div>
+
+                    <div class="form-group col">
+                        @Html.LabelFor(m => m.Listing.Floor, "Этаж")
+                        @Html.TextBoxFor(m => m.Listing.Floor, new { @class = "form-control", @type = "number", @required = "required" })
+                    </div>       
+                </div>
+            </div>
+    </div>
+
+    <div class= "card">
+            <div class= "card-body">
+                <h5 class= "card-title" > Фотографии </h5>
+                <div class= "container form-group col">
+                    <div class= "row row-cols-5" id = "gallery" ></div>
+                </div >
+
+                <div class= "form-group col" >
+                    <input name = "Photos" type = "file" class= "form-control" id = "file-input" multiple = "multiple"/>
+                </div>
+            </div>
+    </div>
+    <div id = "file-inputs" hidden ></div>
+    <p>
+        <input class="btn btn-primary float-right" type="submit" value="Создать объявление" />
+    </p>
+}
+@if (User.Identity.IsAuthenticated && User.IsInRole("admin"))
+{
+    <button class="btn btn-dark float-righ" onclick="FillForm()">Заполнить форму</button>
+}
+
+<script>
+    function addPhoto() {
+        var files = event.target.files;
+        for (var i = 0; i < files.length; i++)
+        {
+            var img = document.createElement('img');
+            img.setAttribute('class', 'col');
+            img.src = URL.createObjectURL(event.target.files[i]);
+            event.target.value = "";
+            document.getElementById('gallery').appendChild(img);
+        }
+    }
+    function FillForm()
+    {
+        document.getElementById("Listing_Rooms").value = "3";
+        document.getElementById("Listing_Space").value = "40";
+        document.getElementById("Listing_Floor").value = "2";
+        document.getElementById("Listing_Price").value = "3000000";
+        document.getElementById("Listing_Region").value = "Ивановская область";
+        document.getElementById("Listing_City").value = "Иваново";
+        document.getElementById("Listing_Street").value = "ул. Шошина";
+        document.getElementById("Listing_Building").value = "4";
+        document.getElementById("Listing_Flat").value = "6";
+    }
+</script>

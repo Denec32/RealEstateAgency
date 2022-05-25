@@ -1,0 +1,94 @@
+﻿@using System.Security.Claims
+@using RealEstateAgencyService.Models
+@using RealEstateAgencyService.ViewModels
+
+@model Listing;
+
+<script src="https://code.jquery.com/jquery-3.4.0.js"></script>
+
+@using (Html.BeginForm("PutListing", "Home", FormMethod.Post, new { enctype="multipart/form-data"}))
+{
+        <div class="form-group col" hidden>
+        @Html.LabelFor(m => m.Id, "Идентификатор Объявления")
+        @Html.TextBoxFor(m => m.Id, new { @class = "form-control", @type="number", @required = "required", @Value = Model.Id })
+    </div>
+
+    <div class="form-group col">
+        @Html.LabelFor(m => m.Rooms, "Количество комнат")
+        @Html.TextBoxFor(m => m.Rooms, new { @class = "form-control", @type="number", @required = "required" })
+    </div>
+    <div class="form-group col">
+        @Html.LabelFor(m => m.Space, "Площадь квартиры")
+        @Html.TextBoxFor(m => m.Space, new { @class = "form-control", @type = "number", @required = "required" })
+    </div>
+
+    <div class="form-group col">
+        @Html.LabelFor(m => m.Floor, "Этаж")
+        @Html.TextBoxFor(m => m.Floor, new { @class = "form-control", @type = "number", @required = "required" })
+    </div>    
+    
+    <div class="form-group col">
+        @Html.LabelFor(m => m.Price, "Стоимость квартиры")
+        @Html.TextBoxFor(m => m.Price, new { @class = "form-control", @type="number", @required = "required" })
+    </div>    
+    
+     <div class="form-group col">
+        @Html.LabelFor(m => m.Region, "Область")
+        @Html.TextBoxFor(m => m.Region, new { @class = "form-control", @type = "text", @required = "required" })
+    </div>
+    
+    <div class="form-group col">
+        @Html.LabelFor(m => m.City, "Город")
+        @Html.TextBoxFor(m => m.City, new { @class = "form-control", @type = "text", @required = "required" })
+    </div>
+
+    <div class="form-group col">
+        @Html.LabelFor(m => m.Street, "Улица")
+        @Html.TextBoxFor(m => m.Street, new { @class = "form-control", @type = "text", @required = "required" })
+    </div>
+
+    <div class="form-group col">
+        @Html.LabelFor(m => m.Building, "Номер здания")
+        @Html.TextBoxFor(m => m.Building, new { @class = "form-control", @type = "text", @required = "required" })
+    </div>
+
+        <div class="form-group col">
+        <label>Фото квартиры 1</label>
+        <input name="photo1" type="file" class="form-control" id="uploader1"/>
+    </div>
+
+    <div class="form-group col" id="form2">
+        <label>Фото квартиры 2</label>
+        <input name="photo2" type="file" class="form-control" id="uploader2"/>
+    </div>
+
+    <div class="form-group col" id="form3">
+        <label>Фото квартиры 3</label>
+        <input name="photo3" type="file" class="form-control" id="uploader3"/>
+    </div>
+
+    <div class="form-group col" id="form4">
+        <label>Фото квартиры 4</label>
+        <input name="photo4" type="file" class="form-control" id="uploader4"/>  
+    </div>
+
+    <div class="form-group col" id="form5">   
+        <label>Фото квартиры 5</label>
+        <input name="photo5" type="file" class="form-control" id="uploader5"/>
+    </div>
+
+    <div class="form-group col" id="form6">  
+        <label>Фото квартиры 6</label>
+        <input name="photo6" type="file" class="form-control" id="uploader6"/>
+    </div>
+    <br>
+
+    <p>
+        <input class="btn btn-primary float-right" type="submit" value="Обновить Объявление" />
+    </p>
+}
+
+
+<script>
+
+</script>

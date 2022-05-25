@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Авторизация";
+}
+@model RealEstateAgencyService.ViewModels.LoginViewModel
+
+<div class="card" style="margin: 16px;">
+    <div class="card-body">
+        <h5 class="card-title">Авторизация</h5>
+        <form method="post" asp-controller="Account" asp-action="Login">
+                <p class="form-group">
+                    @Html.LabelFor(m => m.Email, "Почта")
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @type = "text", @name="username"})
+                </p>
+        
+                 <p class="form-group">
+                    @Html.LabelFor(m => m.Password, "Пароль")
+                    @Html.TextBoxFor(m => m.Password, new { @class = "form-control", @type = "password", @name="password"})
+                </p>
+
+                <p class="form-group mb-3 form-check">
+                    @Html.LabelFor(m => m.RememberMe, "Запомнить меня")
+                    @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input", @type = "checkbox"})
+                </p>
+                <p class="mb-3">
+                    <button type="submit" class="btn btn-primary float-right">Войти</button>
+                </p>
+        </form>
+    </div>
+</div>
