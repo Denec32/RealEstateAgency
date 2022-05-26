@@ -14,25 +14,20 @@
             <h5 class="card-title">Данные о пользователе</h5>
             <form method="post" asp-controller="Account" asp-action="UpdateUser">
                 <div class="row mb-3">
-
                     <div class="form-group col" hidden>
                         @Html.LabelFor(m => m.Id, "Идентификатор")
                         @Html.TextBoxFor(m => m.Id, new { @class = "form-control", @type = "text", @Value = Model.Id})
                     </div>
-
                     <div class="form-group col">
                         @Html.LabelFor(m => m.FirstName, "Имя")
                         @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", @type = "text", @Value = Model.FirstName})
-                    </div>
-            
+                    </div>            
                      <div class="form-group col">
                         @Html.LabelFor(m => m.LastName, "Фамилия")
                         @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", @type = "text", @Value = Model.LastName})
                     </div>
-
                 </div>
                 <div class="row mb-3">
-
                     <div class="form-group col">
                         @Html.LabelFor(m => m.Email, "Почта")
                         @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @type = "email", @required = "required", @disabled="disabled", @Value = Model.Email})
@@ -42,7 +37,6 @@
                         @Html.LabelFor(m => m.PhoneNumber, "Номер телефона")
                         @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", @type = "text", @Value = Model.PhoneNumber})
                     </div>
-
                 </div>
                 <div class="d-inline mb-3">
                     <button type="submit" class="btn btn-primary float-right">Обновить Данные</button>
@@ -70,20 +64,18 @@
                                 <div class="card-body">
                                     <div class="d-flex">
                                         <h5 class="card-title price me-auto p-2">@item.Price</h5>
+                                        <a class="p-2" onclick="changeVisability(@item.Id, this)">
                                         @if (item.ListingStatusId == 1)
                                         {
-                                            <a class="p-2" onclick="changeVisability(@item.Id, this)">
-                                                <i class="fa-solid fa-lg fa-flip fa-eye-slash"></i>
-                                                <i class="fa-solid fa-lg fa-flip fa-eye" hidden></i>
-                                            </a>
+                                            <i class="fa-solid fa-lg fa-flip fa-eye-slash"></i>
+                                            <i class="fa-solid fa-lg fa-flip fa-eye" hidden></i>
                                         }
                                         else
                                         {
-                                            <a class="p-2" onclick="changeVisability(@item.Id, this)">
-                                                <i class="fa-solid fa-lg fa-flip fa-eye"></i>
-                                                <i class="fa-solid fa-lg fa-flip fa-eye-slash" hidden></i>
-                                            </a>
+                                            <i class="fa-solid fa-lg fa-flip fa-eye"></i>
+                                            <i class="fa-solid fa-lg fa-flip fa-eye-slash" hidden></i>
                                         }
+                                        </a>
                                         <a class="p-2" href = "~/Home/UpdateListing/@item.Id"><i class="fa-solid fa-lg fa-pen-to-square fa-beat"></i></a>
                                         <a class="p-2" href = "~/Home/RemoveListing/@item.Id"><i class="fa-solid fa-lg fa-trash fa-bounce"></i></a>
                                     </div>
@@ -136,13 +128,10 @@ else
             data: { id: listing_id},
             url: "@Url.Action("ChangeVisability", "Home")",
             success: function (result) {
-                //.removeChild(element.firstChild);
-                //obj = obj.firstChild;
-                //console.log(obj);
+
                 el1 = obj.childNodes[1];
                 el2 = obj.childNodes[3];
 
-                //obj.childNodes.forEach(element => console.log(element));
                 console.log(el1.hidden);
                 console.log(el2.hidden);
 
