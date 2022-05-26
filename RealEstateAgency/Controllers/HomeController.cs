@@ -74,15 +74,17 @@ namespace RealEstateAgency.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 Listing listing = _serviceAPI.GetListing(id).Result;
-                switch (listing.ListingStatusId)
+                List<ListingStatus> statuses = _serviceAPI.GetListingStatuses().Result.ToList();
+
+                if (listing.ListingStatusId == statuses[0].Id)
                 {
-                    case 1:
-                        listing.ListingStatusId = 2;
-                        break;
-                    case 2:
-                        listing.ListingStatusId = 1;
-                        break;
+                    listing.ListingStatusId = statuses[1].Id;
                 }
+                else
+                {
+                    listing.ListingStatusId = statuses[0].Id;
+                }
+
                 await _serviceAPI.UpdateListing(listing);
             }
             return RedirectToAction("Index", "Account");

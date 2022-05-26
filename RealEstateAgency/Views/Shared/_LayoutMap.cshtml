@@ -59,19 +59,19 @@
 </body>
 
 <style>
-    .container-fluid{
+    .container-fluid {
         padding-left: 0rem;
         padding-right: 0rem;
         overflow: hidden;
     }   
 
     footer {
-     background: #81ccfb;
-     padding: 1em;
-     position: absolute;
-     left: 0;
-     right: 0;
-     bottom: 0;
+        background: #81ccfb;
+        padding: 1em;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
     }
     html, body {margin: 0; height: 100%; overflow: hidden}
 </style>
@@ -80,15 +80,15 @@
     var item = document.getElementById('firstName');
     if("@User.Identity.IsAuthenticated" == "True")
     {
-    var fullName = '@User.FindFirstValue(ClaimTypes.NameIdentifier)';
-    $.ajax({
-        type: 'GET',
-        data: { id: fullName},
-        url: '/Account/GetFirstName?handler=FirstName',
-        success: function (result) {
-            $('#firstName').html(result);
-        }
-    });
+        var fullName = '@User.FindFirstValue(ClaimTypes.NameIdentifier)';
+        $.ajax({
+            type: 'GET',
+            data: { id: fullName},
+            url: '/Account/GetFirstName?handler=FirstName',
+            success: function (result) {
+                $('#firstName').html(result);
+            }
+        });
     }
 </script>
 

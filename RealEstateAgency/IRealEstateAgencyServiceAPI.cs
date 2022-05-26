@@ -19,7 +19,11 @@ namespace RealEstateAgency
         Task <Listing> GetListing(int id);
 
         [Get("/api/phone/{id}")]
-        Task<string> GetPhoneNumber(string id);           
+        Task<string> GetPhoneNumber(string id);
+
+        [Get("/api/ListingStatus")]
+        Task<IEnumerable<ListingStatus>> GetListingStatuses();
+
         
         [Get("/api/username/{id}")]
         Task<string> GetFirstName(string id);            
