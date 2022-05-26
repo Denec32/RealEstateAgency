@@ -1,17 +1,6 @@
-﻿body {
-    font-family: Verdana, Helvetica, sans-serif;
-    background-color: azure;
-}
-
-.container {
+﻿.container {
     margin: auto;
-    width: 80%;
     padding: 10px;
-}
-
-.description {
-    text-align: center;
-    font-size: 22px;
 }
 
 .price {
@@ -19,8 +8,8 @@
     font-weight: bold;
 }
 
-.photo {
-    width: 200px;
+.card {
+    margin: 10px;
 }
 
 /* Slideshow container */
@@ -98,5 +87,14 @@
 }
 
 .name {
-    font-size: 24px;
+    font-size: 18px;
+}
+
+.alert {
+    position: fixed;
+    margin: 20px;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    display: none;
 }

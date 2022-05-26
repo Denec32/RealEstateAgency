@@ -10,40 +10,79 @@
 <script src="https://code.jquery.com/jquery-3.4.0.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVxydMVf1Hr-oNZkBCgPGFp-JXKgAFOQg"></script>
 
-<div class = "container">
-    <p class ="name">@Model.User.FirstName </p>
-    <p><button class = "btn btn-success" id = "phone">Показать номер телефона</button></p>
-    
-    <div class="slideshow-container">
-        @foreach (var item in Model.RealEstatePhotos)
-        {
-            <div class="mySlides">
-                <div class="numbertext rounded border border-light">@counter / @Model.RealEstatePhotos.Count</div>
-                <img src="data:image;base64,@Convert.ToBase64String(item.Photo)" style="width: 100%; height: 400px; object-fit: contain;">
+
+<div class="container">
+    <div class="row">
+        <div class="col-8" style="padding: 0">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Фотографии</h5>
+                    <div class = "container"> 
+                        <div class="slideshow-container">
+                            @foreach (var item in Model.RealEstatePhotos)
+                            {
+                                <div class="mySlides">
+                                    <div class="numbertext rounded border border-light">@counter / @Model.RealEstatePhotos.Count</div>
+                                    <img src="data:image;base64,@Convert.ToBase64String(item.Photo)" style="width: 100%; height: 400px; object-fit: contain;">
+                                </div>
+                            counter++;
+                            }   
+                            <a class="prev" onclick="plusSlides(-1)">❮</a>
+                            <a class="next" onclick="plusSlides(1)">❯</a>
+
+                        </div>
+                        @{
+                            counter = 1;
+                        }
+                        <div style="text-align:center">
+                        @foreach (var item in Model.RealEstatePhotos)
+                        {
+                            <span class="dot" onclick="currentSlide(@counter)"></span>
+                            counter++;
+                        }
+                        </div>
+                    </div>
+                </div>
             </div>
-        counter++;
-        }   
-        <a class="prev" onclick="plusSlides(-1)">❮</a>
-        <a class="next" onclick="plusSlides(1)">❯</a>
-
+        </div>
+        <div class="col-4">
+            <div class="row row-cols-1">
+                <div class="col" style="padding: 0">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Контактные Данные</h5>
+                            <p class ="name card-text">@Model.User.FirstName </p>
+                            <p><button class = "btn btn-success" id = "phone">Показать номер телефона</button></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col" style="padding: 0">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Детали</h5>
+                            <div class="price card-text">@Model.Listing.Price</div>
+                            <div class="card-text">@Model.Listing.Rooms-комн. квартира, @Model.Listing.Space м², @Model.Listing.Floor этаж</div>
+                            <div class="card-text" id='address'>@Model.Listing.City, @Model.Listing.Street, @Model.Listing.Building</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    @{
-        counter = 1;
-    }
-    <div style="text-align:center">
-    @foreach (var item in Model.RealEstatePhotos)
-    {
-        <span class="dot" onclick="currentSlide(@counter)"></span>
-        counter++;
-    }
-    </div>
-
-    <div class="price">@Model.Listing.Price</div>
-    <div>@Model.Listing.Rooms-комн. квартира, @Model.Listing.Space м², @Model.Listing.Floor этаж</div>
-    <div id='address'>@Model.Listing.City, @Model.Listing.Street, @Model.Listing.Building</div>
-
-    <div id="googleMap" style="width:100%;height:400px;"></div>
 </div>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Местоположение</h5>
+        <div id="googleMap" style="width:100%;height:400px;"></div>
+    </div>
+</div>
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <h4 class="alert-heading">Ошибка получения данных</h4>
+    <p><a href="~/Account/Login" class="alert-link">Авторизируйтесь</a> или <a href="~/Account/Register" class="alert-link">создайте новый аккаунт</a></p>
+    <button type="button" class="btn-close" aria-label="Close"></button>
+</div>
+
 
 <script>
 
@@ -54,6 +93,9 @@
     
     var apiString = 'https://geocode-maps.yandex.ru/1.x/?apikey='+api+'&format=json&geocode=' + address;
 
+    $('.alert .btn-close').on('click', function(e) {
+        $(this).parent().hide();
+    });
     let response = fetch(apiString).then((response) => {
     return response.json(); })
     .then( (data) => {
@@ -81,9 +123,17 @@
         $.ajax({
             type: 'GET',
             data: { id: fullName},
-            url: '/Home/OnGetPhone?handler=Phone',
+            url: '/Home/GetPhone?handler=Phone',
             success: function (result) {
-                $('#phone').html(result);
+                if (result) {
+                    $('#phone').html(result);
+                }
+                else { 
+                    $('.alert').show();
+                    setTimeout(() => {
+                    $('.alert').hide()
+                  }, 3000);
+                }
             }
         });
     });
@@ -91,6 +141,8 @@
     let rubleRussia = Intl.NumberFormat("ru-RU", {
         style: "currency",
         currency: "RUB",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
     });
 
     const price = document.getElementsByClassName("price");

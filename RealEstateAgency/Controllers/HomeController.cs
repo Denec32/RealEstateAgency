@@ -33,10 +33,17 @@ namespace RealEstateAgency.Controllers
             return View(lm);
         }
 
-        public string OnGetPhone(string id)
+        public string GetPhone(string id)
         {
-            string ph = _serviceAPI.GetPhoneNumber(id).Result;
-            return ph;
+            if (User.Identity.IsAuthenticated)
+            {
+                string phoneNum = _serviceAPI.GetPhoneNumber(id).Result;
+                return phoneNum;
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
         public IActionResult Privacy()
         {
