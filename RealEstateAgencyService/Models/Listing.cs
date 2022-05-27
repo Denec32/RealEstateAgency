@@ -27,8 +27,11 @@ namespace RealEstateAgencyService.Models
         public string? Street { get; set; }
 
         public string? Building { get; set; }
+
+        public string? Description { get; set; }
+
         [JsonIgnore]
-        public User? User { get; set; }
+        public User? User { get; set; } 
         public string UserId { get; set; }
         [JsonIgnore]
         public ListingStatus? ListingStatus { get; set; }

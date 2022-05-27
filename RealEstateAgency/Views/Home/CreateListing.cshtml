@@ -66,6 +66,18 @@
             </div>
     </div>
 
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">О Квартире</h5>
+            <div class="row">
+                <div class="form-group col">
+                    @Html.LabelFor(m => m.Listing.Description, "Описание")
+                    @Html.TextBoxFor(m => m.Listing.Description, new { @class = "form-control", @type="text", @required = "required" })
+                </div>   
+            </div>
+        </div>
+    </div>
+
     <div class= "card">
             <div class= "card-body">
                 <h5 class= "card-title" > Фотографии </h5>

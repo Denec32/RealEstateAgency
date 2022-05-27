@@ -2,13 +2,17 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RealEstateAgencyService.Data;
+using Microsoft.Extensions;
 
 namespace RealEstateAgencyService.Models
 {
     public class RealEstateAgencyDbContext: IdentityDbContext<User>
     {
-        public RealEstateAgencyDbContext()
+        protected readonly IConfiguration Configuration;
+
+        public RealEstateAgencyDbContext(IConfiguration configuration)
         {
+            Configuration = configuration;
             //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
@@ -22,6 +26,8 @@ namespace RealEstateAgencyService.Models
         {
             optionsBuilder.UseSqlServer(
                 "Server=DENECLAPTOP\\SQLEXPRESS;Database=RealEstateAgency;Trusted_Connection=True;MultipleActiveResultSets=true");
+            //optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+           
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
