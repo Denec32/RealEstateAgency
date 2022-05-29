@@ -9,14 +9,9 @@ namespace RealEstateAgency.Controllers
 {
     public class HomeController : Controller
     {
-
-
-        private readonly ILogger<HomeController> _logger;
         private readonly IRealEstateAgencyServiceAPI _serviceAPI;
-        public HomeController(ILogger<HomeController> logger,
-            IRealEstateAgencyServiceAPI api)
+        public HomeController(IRealEstateAgencyServiceAPI api)
         {
-            _logger = logger;
             _serviceAPI = api;
         }
 

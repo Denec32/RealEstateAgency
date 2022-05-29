@@ -15,79 +15,123 @@ namespace RealEstateAgencyService.Controllers
             db = context;
         }
 
+        //GET api/listing
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Listing>>> Get()
         {
+            if (db.Listings == null)
+            {
+                return BadRequest();
+            }
 
-            return await db.Listings.ToListAsync();
-
-        }
-
-        // GET api/users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Listing>> Get(int id)
-        {
-            Listing list = await db.Listings.FirstOrDefaultAsync(x => x.Id== id);
+            var listings = await db.Listings.ToListAsync();
             var photos = (from t1 in db.RealEstatePhotos select t1).ToList();
-            list.RealEstatePhotos = photos.Where(x => x.ListingId == list.Id).ToList();
-            if (list == null)
+
+            if (photos == null)
+            {
+                return Ok(listings);
+            }
+
+            foreach (var listing in listings)
+            {
+                listing.RealEstatePhotos = photos.Where(x => x.ListingId == listing.Id).ToList();
+            }
+
+            return Ok(listings);
+        }
+
+        //GET api/listing/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<Listing>>> Get(int id)
+        {
+            if (db.Listings == null)
+            {
+                return BadRequest();
+            }
+
+            var listing = await db.Listings.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (listing == null)
             {
                 return NotFound();
             }
-            return new ObjectResult(list);
+
+            var photos = (from t1 in db.RealEstatePhotos select t1).ToList();
+
+            if (photos == null)
+            {
+                return Ok(listing);
+            }
+
+            listing.RealEstatePhotos = photos.Where(x => x.ListingId == listing.Id).ToList();
+
+            return Ok(listing);
         }
 
-        // POST api/users
+        //POST api/listing
         [HttpPost]
-        public async Task<ActionResult<Listing>> Post(Listing list)
+        public async Task<ActionResult<Listing>> Post(Listing listing)
         {
-            if (list == null)
+            if (listing == null)
             {
                 return BadRequest();
             }
-            db.Listings.Add(list);
-            //await db.SaveChangesAsync();
+            db.Listings?.Add(listing);
 
-            foreach (var item in list.RealEstatePhotos)
+            if (listing.RealEstatePhotos != null)
             {
-                //item.ListingId = list.Id;
-                db.RealEstatePhotos.Add(item);
+                foreach (var photo in listing.RealEstatePhotos)
+                {
+                    if (photo.ListingId != listing.Id)
+                    {
+                        photo.ListingId = listing.Id;
+                    }
+                    db.RealEstatePhotos?.Add(photo);
+                }
             }
 
             await db.SaveChangesAsync();
-            return Ok(list);
+            return Ok(listing);
         }
 
-        // PUT api/users/
+        //PUT api/listing
         [HttpPut]
-        public async Task<ActionResult<Listing>> Put([FromBody] Listing list)
+        public async Task<ActionResult<Listing>> Put([FromBody] Listing listing)
         {
-            if (list == null)
+            if (listing == null)
             {
                 return BadRequest();
             }
-            if (!db.Listings.Any(x => x.Id == list.Id))
+
+            if (db.Listings == null || !db.Listings.Any(x => x.Id == listing.Id))
             {
                 return NotFound();
             }
 
-            db.Update(list);
+            db.Update(listing);
             await db.SaveChangesAsync();
-            return Ok(list);
+            return Ok(listing);
         }
 
-        // DELETE api/users/5
+        //DELETE api/listing/{id}
         [HttpDelete("{id}")]
         public async Task<ActionResult<Listing>> Delete(int id)
         {
-            Listing list = db.Listings.FirstOrDefault(x => x.Id == id);
-            if (list == null)
+            if (db.Listings == null)
+            {
+                return BadRequest();
+            }
+
+            var listing = await db.Listings.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (listing == null)
             {
                 return NotFound();
             }
-            db.Listings.Remove(list);
+
+            db.Listings.Remove(listing);
             await db.SaveChangesAsync();
-            return Ok(list);
+            return Ok(listing);
         }
     }
 }

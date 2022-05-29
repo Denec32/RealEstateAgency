@@ -28,9 +28,11 @@ var settings = new RefitSettings()
 
 builder.Services.AddRefitClient<IRealEstateAgencyServiceAPI>(settings)
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://localhost:7007"));
+
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling =
     ReferenceLoopHandling.Ignore);
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

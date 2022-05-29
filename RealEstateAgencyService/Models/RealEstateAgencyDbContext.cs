@@ -21,6 +21,9 @@ namespace RealEstateAgencyService.Models
         public DbSet<ListingStatus>? ListingStatuses { get; set; }
         public DbSet<RealEstatePhoto>? RealEstatePhotos { get; set; }
         public DbSet<User>? Users { get; set; }
+        public DbSet<Building>? Buildings { get; set; }
+        public DbSet<BuildingPhoto>? BuildingPhotos { get; set; }
+        public DbSet<Favourite>? Favourites { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
