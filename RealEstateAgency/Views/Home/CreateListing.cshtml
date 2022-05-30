@@ -32,8 +32,8 @@
                     </div>
 
                     <div class="form-group col">
-                        @Html.LabelFor(m => m.Listing.Building, "Номер здания")
-                        @Html.TextBoxFor(m => m.Listing.Building, new { @class = "form-control", @type = "text", @required = "required" })
+                        @Html.LabelFor(m => m.Listing.BuildingNumber, "Номер здания")
+                        @Html.TextBoxFor(m => m.Listing.BuildingNumber, new { @class = "form-control", @type = "text", @required = "required" })
                     </div>
                 </div>
             </div>
@@ -124,7 +124,7 @@
         document.getElementById("Listing_Region").value = "Ивановская область";
         document.getElementById("Listing_City").value = "Иваново";
         document.getElementById("Listing_Street").value = "ул. Шошина";
-        document.getElementById("Listing_Building").value = "4";
+        document.getElementById("Listing_BuildingNumber").value = "4";
         document.getElementById("Listing_Flat").value = "6";
     }
 </script>

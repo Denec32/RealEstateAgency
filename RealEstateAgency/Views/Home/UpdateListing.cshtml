@@ -3,7 +3,9 @@
 @using RealEstateAgencyService.ViewModels
 
 @model Listing;
-
+@{
+    ViewData["Title"] = "Обновить объявление";
+}
 <script src="https://code.jquery.com/jquery-3.4.0.js"></script>
 
 @using (Html.BeginForm("PutListing", "Home", FormMethod.Post, new { enctype="multipart/form-data"}))

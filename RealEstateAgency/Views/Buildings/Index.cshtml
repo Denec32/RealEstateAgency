@@ -1,0 +1,40 @@
+﻿@using RealEstateAgencyService.Models
+@using RealEstateAgencyService.ViewModels
+@using System.Globalization
+@{
+    ViewData["Title"] = "Дома";
+}
+ @model List<Building>;
+<script src="https://kit.fontawesome.com/d1ac7949f1.js" crossorigin="anonymous"></script>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Список домов</h5>
+        @foreach (var item in Model)
+        {
+            <div class="card mb-3" style="cursor: pointer;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        @if (item.BuildingPhotos is not null)
+                        {
+                            <img class="img-fluid rounded-start" src="data:image;base64,@Convert.ToBase64String(item.BuildingPhotos.FirstOrDefault().Photo)">
+                        }
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <h5 class="card-title price me-auto p-2">@item.Region, @item.City, @item.Street @item.BuildingNumber</h5>
+                                <a class="p-2" href = "#"><i class="fa-solid fa-lg fa-pen-to-square fa-beat"></i></a>
+                                <a class="p-2" href = "#"><i class="fa-solid fa-lg fa-trash fa-bounce"></i></a>
+                            </div>
+        
+                            <p class="card-text"></p>
+                            <p class="card-text"></p>
+                            <p class="card-text"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

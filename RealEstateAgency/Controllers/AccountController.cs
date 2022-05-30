@@ -10,13 +10,10 @@ namespace RealEstateAgency.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly IRealEstateAgencyServiceAPI _serviceAPI;
+        private readonly IUserIdentityAPI _serviceAPI;
         private readonly SignInManager<User> _signInManager;
-        public AccountController(ILogger<HomeController> logger,
-            IRealEstateAgencyServiceAPI api, SignInManager<User> signInManager)
+        public AccountController(IUserIdentityAPI api, SignInManager<User> signInManager)
         {
-            _logger = logger;
             _serviceAPI = api;
             _signInManager = signInManager;
         }
@@ -145,6 +142,19 @@ namespace RealEstateAgency.Controllers
             
             await _serviceAPI.UpdateUser(user);
             return RedirectToAction("Index", "Account");
+        }
+
+        public string GetPhone(string id)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                string phoneNum = _serviceAPI.GetPhoneNumber(id).Result;
+                return phoneNum;
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
     }
 }

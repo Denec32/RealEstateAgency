@@ -19,12 +19,17 @@ namespace RealEstateAgencyService.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<string>> Get(string id)
         {
-            User user = await db.Users.FirstOrDefaultAsync(x => x.Id == id);
+            if (db.Users == null)
+            {
+                return BadRequest();
+            }
+
+            var user = await db.Users.FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
             {
                 return NotFound();
             }
-            return new ObjectResult(user.FirstName);
+            return Ok(user.FirstName);
         }
     }
 }

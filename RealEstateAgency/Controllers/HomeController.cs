@@ -9,37 +9,25 @@ namespace RealEstateAgency.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IRealEstateAgencyServiceAPI _serviceAPI;
+        private readonly IRealEstateAgencyServiceAPI _service;
         public HomeController(IRealEstateAgencyServiceAPI api)
         {
-            _serviceAPI = api;
+            _service = api;
         }
 
         public IActionResult Index()
         {
-            List<ListingModel> lm = _serviceAPI.GetListingModel().Result.ToList();
+            List<ListingModel> lm = _service.GetListingModel().Result.ToList();
             List<ListingModel> selected = lm.Where(x => x.ListingStatus.Id == 1).ToList();
             return View(selected);
         }
         public IActionResult Listing(int id)
         {
-            ListingModel lm = _serviceAPI.GetListingModel(id).Result;
+            ListingModel lm = _service.GetListingModel(id).Result;
 
             return View(lm);
         }
 
-        public string GetPhone(string id)
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                string phoneNum = _serviceAPI.GetPhoneNumber(id).Result;
-                return phoneNum;
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
         public IActionResult Privacy()
         {
             return View();
@@ -53,23 +41,20 @@ namespace RealEstateAgency.Controllers
 
         public IActionResult CreateListing()
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
 
                 return View();
             }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            return RedirectToAction("Index", "Home");
         }
 
         public async Task<IActionResult> ChangeVisabilityAsync(int id)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
-                Listing listing = _serviceAPI.GetListing(id).Result;
-                List<ListingStatus> statuses = _serviceAPI.GetListingStatuses().Result.ToList();
+                Listing listing = _service.GetListing(id).Result;
+                List<ListingStatus> statuses = _service.GetListingStatuses().Result.ToList();
 
                 if (listing.ListingStatusId == statuses[0].Id)
                 {
@@ -80,29 +65,36 @@ namespace RealEstateAgency.Controllers
                     listing.ListingStatusId = statuses[0].Id;
                 }
 
-                await _serviceAPI.UpdateListing(listing);
+                await _service.UpdateListing(listing);
             }
             return RedirectToAction("Index", "Account");
         }
         public async Task<IActionResult> RemoveListingAsync(int id)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
-                await _serviceAPI.DeleteListing(id);
+                await _service.DeleteListing(id);
             }
             return RedirectToAction("Index", "Account");
         }
 
-        public async Task<IActionResult> PostListingAsync(ListAndPhotosViewModel l)
+        public async Task<IActionResult> PostListingAsync(ListAndPhotosViewModel model)
         {
-            l.Listing.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            l.Listing.Created = DateTime.Now;
-            l.Listing.ListingStatusId = 1;
-
-            byte[] imageData = null;
-            l.Listing.RealEstatePhotos = new List<RealEstatePhoto>();
-            foreach (var item in l.Photos)
+            if (model.Listing is null)
             {
+                return RedirectToAction("Error", "Account");
+            }
+
+            model.Listing.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            model.Listing.Created = DateTime.Now;
+            model.Listing.ListingStatusId = 1;
+
+            model.Listing.BuildingId = 1;
+
+            model.Listing.RealEstatePhotos = new List<RealEstatePhoto>();
+            foreach (var item in model.Photos)
+            {
+                byte[] imageData;
                 using (var binaryReader = new BinaryReader(item.OpenReadStream()))
                 {
                     imageData = binaryReader.ReadBytes((int)item.Length);
@@ -110,24 +102,23 @@ namespace RealEstateAgency.Controllers
 
                 var photo = new RealEstatePhoto
                 {
-                    ListingId = l.Listing.Id,
+                    ListingId = model.Listing.Id,
                     Photo = imageData
                 };
 
-                l.Listing.RealEstatePhotos.Add(photo);
+                model.Listing.RealEstatePhotos.Add(photo);
             }
 
+            await _service.PostListing(model.Listing);
 
-            await _serviceAPI.PostListing(l.Listing);
-
-            return View(l);
+            return View(model);
         }
 
         public IActionResult UpdateListing(int id)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
-                var list = _serviceAPI.GetListing(id).Result;
+                var list = _service.GetListing(id).Result;
                 return View(list);
             }
             else
@@ -136,15 +127,15 @@ namespace RealEstateAgency.Controllers
             }
         }
 
-        public IActionResult PutListing(Listing l)
+        public IActionResult PutListing(Listing listing)
         {
-            l.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            l.Created = DateTime.Now;
-            l.ListingStatusId = 1;
+            listing.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            listing.Created = DateTime.Now;
+            listing.ListingStatusId = 1;
 
-            _serviceAPI.UpdateListing(l);
+            _service.UpdateListing(listing);
 
-            return View(l);
+            return View(listing);
         }
     }
 }

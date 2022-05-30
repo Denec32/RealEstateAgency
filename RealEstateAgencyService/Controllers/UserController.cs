@@ -20,9 +20,11 @@ namespace RealEstateAgencyService.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> Get()
         {
-
+            if (db.Users == null)
+            {
+                return BadRequest();
+            }
             return await db.Users.ToListAsync();
-
         }
 
         [HttpGet("{id}")]
@@ -43,19 +45,6 @@ namespace RealEstateAgencyService.Controllers
                 item.RealEstatePhotos = photos.Where(x => x.ListingId == item.Id).ToList();
             }
             return new ObjectResult(user);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<User>> Post(User user)
-        {
-            if (user == null)
-            {
-                return BadRequest();
-            }
-
-            db.Users.Add(user);
-            await db.SaveChangesAsync();
-            return Ok(user);
         }
 
         [HttpPut]

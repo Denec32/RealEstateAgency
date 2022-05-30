@@ -20,7 +20,13 @@ namespace RealEstateAgencyService.Controllers
         [HttpPost]
         public async Task<ActionResult<RegisterViewModel>> RegisterUser(RegisterViewModel model)
         {
-            User user = new User { Email = model.Email, UserName = model.Email, FirstName = model.FirstName, LastName = model.LastName, PhoneNumber = model.PhoneNumber };
+            var user = new User { 
+                Email = model.Email, 
+                UserName = model.Email, 
+                FirstName = model.FirstName, 
+                LastName = model.LastName, 
+                PhoneNumber = model.PhoneNumber 
+            };
 
             IdentityResult result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)

@@ -62,7 +62,7 @@
                             <h5 class="card-title">Детали</h5>
                             <div class="price card-text">@Model.Listing.Price</div>
                             <div class="card-text">@Model.Listing.Rooms-комн. квартира, @Model.Listing.Space м², @Model.Listing.Floor этаж</div>
-                            <div class="card-text" id='address'>@Model.Listing.City, @Model.Listing.Street, @Model.Listing.Building</div>
+                            <div class="card-text" id='address'>@Model.Listing.City, @Model.Listing.Street, @Model.Listing.BuildingNumber</div>
                         </div>
                     </div>
                 </div>
@@ -130,7 +130,7 @@
         $.ajax({
             type: 'GET',
             data: { id: fullName},
-            url: '/Home/GetPhone?handler=Phone',
+            url: '/Account/GetPhone?handler=Phone',
             success: function (result) {
                 if (result) {
                     $('#phone').html(result);
