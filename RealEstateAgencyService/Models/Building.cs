@@ -14,23 +14,29 @@ namespace RealEstateAgencyService.Models
         public string? Street { get; set; } // Улица
         public string? BuildingNumber { get; set; } // Номер дома
 
+
+        //Анкета
         public int YearBuilt { get; set; } // Год постройки
-        public string? WallMaterial { get; set; } // Материал стен
-        public string? HouseSeries { get; set; } // Серия дома
         public int FloorNumber { get; set; } // Количество этажей
+        public string? CoveringType { get; set; } //Тип перекрытий
+        public string? WallMaterial { get; set; } // Материал стен
+
+        // Основные сведения
+        public int CommissioningYear { get; set; } //Год ввода в эксплуатацию
+        public int EntranceNumber { get; set; } //Количество подъездов
+
+        //Конструктивные элементы
+        public string? HouseSeries { get; set; } // Серия дома
         public int FlatNumber { get; set; } // Количество квартир
         public bool GarbageDisposal { get; set; } //Мусоропровод
         public bool PlayGround { get; set; } //Детская площадка	
         public bool SportsArea { get; set; } //Спортивная площадка
-        public int CommissioningYear { get; set; } //Год ввода в эксплуатацию
-        public int EntranceNumber { get; set; } //Количество подъездов
         public string? ColdWaterSupply { get; set; } //Холодное водоснабжение
         public string? HotWaterSupply { get; set; } //Горячее водоснабжение
         public string? WaterDump { get; set; } //Водоотведение
         public string? HeatSupply { get; set; } //Теплоснабжение
         public string? EnergySupply { get; set; } //Энергоснабжение
         public string? Ventilation { get; set; } //Вентиляция
-        public string? CoveringType { get; set; } //Тип перекрытий
         public string? FoundationType { get; set; } //Тип фундамента
         public string? EnergyEfficiencyClass { get; set; } //Класс энергоэффективности
 
