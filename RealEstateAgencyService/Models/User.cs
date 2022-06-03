@@ -9,5 +9,7 @@ namespace RealEstateAgencyService.Models
         public string LastName { get; set; }
 
         public List<Listing>? Listings { get; set; }
+
+        public List<Favourite>? Favourites { get; set; }
     }
 }

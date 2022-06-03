@@ -24,9 +24,15 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CreateListing">Разместить объявление</a>
                         </li>
+                        @if (User.Identity is not null && User.Identity.IsAuthenticated && User.IsInRole("admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Buildings" asp-action="Index">Управление домами</a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav ms-auto">
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User.Identity is not null && User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <a id="firstName" class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Index"></a>

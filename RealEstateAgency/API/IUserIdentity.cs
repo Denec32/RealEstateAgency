@@ -6,7 +6,6 @@ namespace RealEstateAgency
 {
     public interface IUserIdentityAPI
     {
-
         [Get("/api/User/{id}")]
         Task<User> GetUser(string id);
 
@@ -21,5 +20,14 @@ namespace RealEstateAgency
 
         [Get("/api/Username/{id}")]
         Task<string> GetFirstName(string id);
+
+        [Get("/api/Favourite/{id}")]
+        Task<IEnumerable<Favourite>> GetFavourites(string id);
+
+        [Post("/api/Favourite")]
+        Task<Favourite> PostFavourite([Body] FavouritePostModel model);
+
+        [Delete("/api/Favourite/{id}")]
+        Task DeleteFavourite(int id);
     }
 }

@@ -127,11 +127,17 @@
         });
 
         google.maps.event.addListener(map, 'click', function(event) {
-           placeMarker(event.latLng);
+            //marker.setMap(null);
+            marker = new google.maps.Marker({
+                position: event.latLng, 
+                map: map
+            });
+            
+            //placeMarker(event.latLng);
         });
 
         function placeMarker(location) {
-            marker.setMap(null);
+            //marker.setMap(null);
             marker = new google.maps.Marker({
                 position: location, 
                 map: map

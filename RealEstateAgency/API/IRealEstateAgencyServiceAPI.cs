@@ -16,7 +16,10 @@ namespace RealEstateAgency
         Task <ListingModel> GetListingModel(int id);   
         
         [Get("/api/Listing/{id}")]
-        Task <Listing> GetListing(int id);
+        Task <Listing> GetListing(int id); 
+        
+        [Get("/api/Listing")]
+        Task <IEnumerable<Listing>> GetListing();
 
         [Get("/api/ListingStatus")]
         Task<IEnumerable<ListingStatus>> GetListingStatuses();       

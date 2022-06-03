@@ -30,20 +30,39 @@ namespace RealEstateAgencyService.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> Get(string id)
         {
+            if (db.Users is null)
+            {
+                return BadRequest();
+            }
+
             User user = await db.Users.FirstOrDefaultAsync(x => x.Id == id);
+
             if (user == null)
             {
                 return NotFound();
             }
 
-            var ls = await db.Listings.ToListAsync();
-            var selected = ls.Where(x => x.UserId == user.Id).ToList();
-            user.Listings = selected;
-            var photos = (from t1 in db.RealEstatePhotos select t1).ToList();
-            foreach (var item in user.Listings)
+            if (db.Listings is not null)
             {
-                item.RealEstatePhotos = photos.Where(x => x.ListingId == item.Id).ToList();
+                var ls = await db.Listings.ToListAsync();
+                var selected = ls.Where(x => x.UserId == user.Id).ToList();
+                user.Listings = selected;
+
+                var photos = (from t1 in db.RealEstatePhotos select t1).ToList();
+
+                foreach (var item in user.Listings)
+                {
+                    item.RealEstatePhotos = photos.Where(x => x.ListingId == item.Id).ToList();
+                }
             }
+
+            if (db.Favourites is not null)
+            {
+
+                var favourites = await db.Favourites.ToListAsync();
+                favourites = favourites.Where(x=>x.UserId == user.Id).ToList();
+            }
+
             return new ObjectResult(user);
         }
 

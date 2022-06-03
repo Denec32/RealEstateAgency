@@ -1,0 +1,36 @@
+﻿@using RealEstateAgencyService.Models
+@using RealEstateAgencyService.ViewModels
+@using System.Globalization
+@{
+    ViewData["Title"] = "Список избранных";
+}
+@model FavouriteViewModel
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Список ваших избранных объявлений</h5>
+        @if (Model.Listings.Count != 0)
+        {
+            @foreach (var item in Model.Listings)
+            {
+                <div class="card mb-3" style="cursor: pointer;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img class="img-fluid rounded-start" src="data:image;base64,@Convert.ToBase64String(item.RealEstatePhotos.FirstOrDefault().Photo)">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <p class="card-text">@item.Rooms-комн. квартира, @item.Space м², @item.Floor этаж</p>
+                                <p class="card-text">@item.City, @item.Street, @item.BuildingNumber</p>
+                                <p class="card-text"><small class="text-muted">Дата добавления: @item.Created.ToString("dd MMM yyyy", new CultureInfo("ru-RU"))</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>Объявления отсутствуют</p>
+        }
+    </div>
+</div>

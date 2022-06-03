@@ -1,5 +1,6 @@
 ﻿@using RealEstateAgencyService.ViewModels
 @using System.Globalization
+@using System.Security.Claims
 @{
     ViewData["Title"] = "Главная страница";
     Layout = "_LayoutMap";
@@ -9,6 +10,7 @@
 @model List<ListingModel>;
 
 <script src="https://code.jquery.com/jquery-3.4.0.js"></script>
+<script src="https://kit.fontawesome.com/d1ac7949f1.js" crossorigin="anonymous"></script>
 
 <div class="input-group shadow-none">
     <input type="search" class="form-control shadow-none rounded-0 border-light" id = "findAddress" placeholder="Введите адрес..." aria-label="Search" aria-describedby="search-addon" />
@@ -55,7 +57,8 @@
             <p class="card-text">@item.Listing.Rooms-комн. квартира, @item.Listing.Space м², @item.Listing.Floor этаж</p>
             <p class="card-text address">@item.Listing.City, @item.Listing.Street, @item.Listing.BuildingNumber</p>
             <p class="card-text"><small class="text-muted">Дата добавления: @item.Listing.Created.ToString("dd MMM yyyy", new CultureInfo("ru-RU"))</small></p>
-            <a class = "btn btn-primary card-text" href = "~/Home/Listing/@item.Listing.Id">Открыть объявление</a>
+            <a class = "btn btn-success card-text" href = "~/Home/Listing/@item.Listing.Id">Открыть объявление</a>
+            <a class = "btn btn-light card-text border" onclick="addToFavourites(@item.Listing.Id)"><i class="fa-solid fa-heart  fa-beat" style="color: grey; --fa-animation-duration: 1.5s;"></i></a>
         </div>
     </div>
 }
@@ -70,7 +73,6 @@
 
     initKeyBindings();
     formatCurrency();
-    initMap();
 
     function initMap(){
         apiString = 'https://geocode-maps.yandex.ru/1.x/?apikey='+api+'&format=json&geocode=' + address;
@@ -86,7 +88,7 @@
                 zoom: 12,
                 center: {lat: la, lng: ln}
             });
-            //map.addListener("idle", () => {
+            map.addListener("idle", () => {
                 let listings = document.getElementsByClassName("address");
     
                 for (let step = 0; step < listings.length; step++) {
@@ -127,12 +129,43 @@
                     })
                     .then(data => obj = data);
                 }   
-            //});
+            });
         })
         .then(data => obj = data);
     }
 
-    function showDiv(){
+    function addToFavourites(listing_id) {
+        $.ajax({
+            type: 'POST',
+            data: { id: listing_id},
+            url: "@Url.Action("PostFavourite", "Account")",
+            success: function (result) {
+                console.log('success');
+                $('#findAddress').html("success");
+            },
+            error: function (jqXHR, exception) {
+                var msg = 'denec';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connect.\n Verify Network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                }
+                $('#findAddress').html(msg);
+            }
+        });  
+    }
+
+    function showDiv() {
         let listings = document.getElementsByClassName('listings-list')[0];  
         let closeButton = document.getElementsByClassName('close-button')[0];  
         listings.hidden = false;
@@ -223,20 +256,20 @@
 
     function showRoomCount(){
         let x = document.getElementsByClassName('room-count')[0];
-        if(x.style.display == "block"){
+        if(x.style.display == "block") {
             x.style.display = "none";
         }
-        else{
+        else {
             x.style.display = "block"
         }
     }
 
     function showPriceRange(){
         let x = document.getElementsByClassName('price-range')[0];
-        if(x.style.display == "block"){
+        if(x.style.display == "block") {
             x.style.display = "none";
         }
-        else{
+        else {
             x.style.display = "block"
         }
     }
@@ -275,6 +308,6 @@
         slides[slideIndex-1].style.display = "block";
     }
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVxydMVf1Hr-oNZkBCgPGFp-JXKgAFOQg"></script>
-<!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVxydMVf1Hr-oNZkBCgPGFp-JXKgAFOQg&callback=initMap"></script>-->
+<!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVxydMVf1Hr-oNZkBCgPGFp-JXKgAFOQg"></script>-->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVxydMVf1Hr-oNZkBCgPGFp-JXKgAFOQg&callback=initMap"></script>
 
