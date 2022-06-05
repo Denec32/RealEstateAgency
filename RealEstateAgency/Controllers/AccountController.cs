@@ -54,7 +54,6 @@ namespace RealEstateAgency.Controllers
                 }
                 catch (ApiException ex)
                 {
-                    var content = ex.GetContentAsAsync<Dictionary<string, string>>();
                     Debug.WriteLine(ex.Message);
                     return RedirectToAction("Register", "Account");
                 }
@@ -68,9 +67,9 @@ namespace RealEstateAgency.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login(string returnUrl = null)
+        public IActionResult Login()
         {
-            return View(new LoginViewModel { ReturnUrl = returnUrl });
+            return View(new LoginViewModel());
         }
 
         [HttpGet]
@@ -86,7 +85,7 @@ namespace RealEstateAgency.Controllers
 
                 var favs = _userService.GetFavourites(userId).Result.ToList();
 
-                List<int> ids = new List<int>();
+                var ids = new List<int>();
 
                 foreach (var item in favs)
                 {
@@ -94,7 +93,7 @@ namespace RealEstateAgency.Controllers
                 }
 
                 var selected = listings.Where(l => ids.Contains(l.Id)).ToList();
-                FavouriteViewModel fpm = new FavouriteViewModel { 
+                var fpm = new FavouriteViewModel { 
                     User = user,
                     Listings = selected
                 };
@@ -112,15 +111,7 @@ namespace RealEstateAgency.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
-                    // проверяем, принадлежит ли URL приложению
-                    if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                    {
-                        return Redirect(model.ReturnUrl);
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Account");
-                    }
+                    return RedirectToAction("Index", "Account");
                 }
                 else
                 {
@@ -140,7 +131,7 @@ namespace RealEstateAgency.Controllers
 
         public IActionResult Index()
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 User user =  _userService.GetUser(userId).Result;
@@ -152,7 +143,7 @@ namespace RealEstateAgency.Controllers
         public string GetFirstName(string id)
         {
             string name = "";
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
                 try
                 {
@@ -160,7 +151,6 @@ namespace RealEstateAgency.Controllers
                 }
                 catch (ApiException ex)
                 {
-                    var content = ex.GetContentAsAsync<Dictionary<string, string>>();
                     Debug.WriteLine(ex.Message);
                     _signInManager.SignOutAsync();
                     return "No User Found";
@@ -178,7 +168,7 @@ namespace RealEstateAgency.Controllers
 
         public string GetPhone(string id)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
                 string phoneNum = _userService.GetPhoneNumber(id).Result;
                 return phoneNum;
@@ -189,9 +179,21 @@ namespace RealEstateAgency.Controllers
             }
         }
 
-        public void PostFavourite(int id)
+        public async Task<bool> PostFavourite(int id)
         {
             string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var userListing = await _userService.GetUser(currentUserId);
+            if (userListing.Listings is not null)
+            {
+                foreach (var listing in userListing.Listings)
+                {
+                    if (listing.Id == id)
+                    {
+                        return false;
+                    }
+                }
+            }
 
             var fm = new FavouritePostModel
             {
@@ -199,7 +201,8 @@ namespace RealEstateAgency.Controllers
                 UserId = currentUserId
             }; 
 
-            _userService.PostFavourite(fm);
+            await _userService.PostFavourite(fm);
+            return true;
         }
     }
 }

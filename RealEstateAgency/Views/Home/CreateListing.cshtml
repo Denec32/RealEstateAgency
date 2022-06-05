@@ -9,44 +9,45 @@
 <script src="https://code.jquery.com/jquery-3.4.0.js"></script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVxydMVf1Hr-oNZkBCgPGFp-JXKgAFOQg&callback=initMap"></script>
 
-@using (Html.BeginForm("PostListing", "Home", FormMethod.Post, new { enctype="multipart/form-data"}))
-{
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Укажите дом на карте</h5>
             <div class="row">
                 <div class="form-group col">
-                    <input type="search" class="form-control shadow-none rounded-0 border-light" id = "findAddress" placeholder="Введите адрес..." aria-label="Search" aria-describedby="search-addon" />
+                    <div class="input-group shadow-none">
+                        <input type="search" class="form-control shadow-none rounded-0 border-light" id = "findAddress" placeholder="Введите адрес..." aria-label="Search" aria-describedby="search-addon" />    
+                        <button type="button" class="btn btn-dark shadow-none rounded-0" onclick = "centerMap()">Поиск</button>
+                    </div> 
                     <div id="googleMap" style="width:100%;height:400px;"></div>
                 </div>  
             </div>
         </div>
     </div>
-
-
+@using (Html.BeginForm("PostListing", "Home", FormMethod.Post, new { enctype="multipart/form-data"}))
+{
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Адрес</h5>
             <div class="row">
                 <div class="form-group col">
                     @Html.LabelFor(m => m.Listing.Region, "Область")
-                    @Html.TextBoxFor(m => m.Listing.Region, new { @class = "form-control", @type = "text", @required = "required" })
+                    @Html.TextBoxFor(m => m.Listing.Region, new { @class = "form-control", @type = "text", @required = "required", @readonly = "readonly" })
                 </div>
         
                 <div class="form-group col">
                     @Html.LabelFor(m => m.Listing.City, "Город")
-                    @Html.TextBoxFor(m => m.Listing.City, new { @class = "form-control", @type = "text", @required = "required" })
+                    @Html.TextBoxFor(m => m.Listing.City, new { @class = "form-control", @type = "text", @required = "required", @readonly = "readonly" })
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col">
                     @Html.LabelFor(m => m.Listing.Street, "Улица")
-                    @Html.TextBoxFor(m => m.Listing.Street, new { @class = "form-control", @type = "text", @required = "required" })
+                    @Html.TextBoxFor(m => m.Listing.Street, new { @class = "form-control", @type = "text", @required = "required", @readonly = "readonly" })
                 </div>
 
                 <div class="form-group col">
                     @Html.LabelFor(m => m.Listing.BuildingNumber, "Номер здания")
-                    @Html.TextBoxFor(m => m.Listing.BuildingNumber, new { @class = "form-control", @type = "text", @required = "required" })
+                    @Html.TextBoxFor(m => m.Listing.BuildingNumber, new { @class = "form-control", @type = "text", @required = "required", @readonly = "readonly" })
                 </div>
             </div>
         </div>
@@ -83,9 +84,9 @@
         <div class="card-body">
             <h5 class="card-title">О Квартире</h5>
             <div class="row">
-                <div class="form-group col">
+                <div class="form-floating">
+                    @Html.TextAreaFor(m => m.Listing.Description, new { @class = "form-control", @required = "required" })
                     @Html.LabelFor(m => m.Listing.Description, "Описание")
-                    @Html.TextBoxFor(m => m.Listing.Description, new { @class = "form-control", @type="text", @required = "required" })
                 </div>   
             </div>
         </div>
@@ -119,33 +120,105 @@
     var map;
     var marker;
 
-    function initMap(){
+    initKeyBindings();
 
+    document.querySelector("form").addEventListener("submit", function(e){
+        if(document.getElementById("Listing_City").value == "" || document.getElementById("Listing_Street").value == "" 
+        || document.getElementById("Listing_BuildingNumber").value == "" || document.getElementById("Listing_Region").value == ""){
+            console.log("prevented");
+            e.preventDefault(); //stop form from submitting
+        }
+    });
+
+    //Инициализация карты
+    function initMap(){
         map = new google.maps.Map(document.getElementById('googleMap'), {        
             zoom: 12,
             center: {lat: 55.75, lng: 37.61}
         });
 
         google.maps.event.addListener(map, 'click', function(event) {
-            //marker.setMap(null);
+            if (marker != null) { 
+                marker.setMap(null);
+            }
+            var icon = {
+                url: "https://i.imgur.com/jMQ2JIh.png",
+                scaledSize: new google.maps.Size(32, 36), 
+            };
             marker = new google.maps.Marker({
                 position: event.latLng, 
-                map: map
-            });
-            
-            //placeMarker(event.latLng);
-        });
+                map: map,
+                icon: icon
+            });     
+            //console.log(event.latLng.lat());
+            //console.log(event.latLng.lng());
 
-        function placeMarker(location) {
-            //marker.setMap(null);
-            marker = new google.maps.Marker({
-                position: location, 
-                map: map
-            });
-        }
+            var apiString = 'https://geocode-maps.yandex.ru/1.x/?apikey='+api+'&format=json&geocode=' + event.latLng.lng() + ',' + event.latLng.lat() + '';
+            //console.log(apiString);
+
+            let response = fetch(apiString).then((response) => {
+                return response.json(); 
+            })
+            .then( (data) => {
+                let str = data.response.GeoObjectCollection.featureMember;
+
+                document.getElementById("Listing_City").value = "";
+                document.getElementById("Listing_Street").value = "";
+                document.getElementById("Listing_BuildingNumber").value = "";    
+                document.getElementById("Listing_Region").value = "";
+
+                for (let i = 0; i < str.length; i++)
+                {     
+                    let obj = str[i].GeoObject.metaDataProperty.GeocoderMetaData;
+                    if (obj.kind == "house") {
+                        console.log(obj.text);   
+                        const address = obj.text.split(", ");
+                        console.log(address);
+
+                        if (address.length == 4) {
+                            if (address[0] == "Россия") {                                
+                                
+                                document.getElementById("Listing_City").value = address[1];
+                                document.getElementById("Listing_Street").value = address[2];
+                                document.getElementById("Listing_BuildingNumber").value = address[3];    
+                            }
+                        }
+                    }                                   
+                    
+                    if (obj.kind == "province" && 
+                    !obj.text.includes("округ")) {
+                        console.log(obj.text);
+                        const address = obj.text.split(", ");
+                        document.getElementById("Listing_Region").value = address[1];
+                    }
+                }
+                console.log("");  
+            })
+            .then(data => obj = data);
+        });
     }
 
+    //Переместить карту к указанному адресу
+    function centerMap(){
+        address = document.getElementById('findAddress').value;
+        address = address.replace(/\s/g, '');
+        apiString = 'https://geocode-maps.yandex.ru/1.x/?apikey='+api+'&format=json&geocode=' + address;
+        let response = fetch(apiString).then((response) => {
+        return response.json(); })
+        .then( (data) => {
+            let str = data.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos + '';
+            const myArray = str.split(" ");
+            ln = parseFloat(myArray[0]);         
+            la = parseFloat(myArray[1]);
+            //console.log(ln);
+            //console.log(la);
+            map.setCenter({lat: la,  lng: ln});
+            map.setZoom(18);
+        })
+        .then(data => obj = data);
+    }
 
+    //Добавить на представление 
     function addPhoto() {
         var files = event.target.files;
         console.log(files.length);
@@ -160,16 +233,23 @@
         }
 
     }
+
+    //Заполнить форму тестовыми данными
     function FillForm()
     {
         document.getElementById("Listing_Rooms").value = "3";
         document.getElementById("Listing_Space").value = "40";
         document.getElementById("Listing_Floor").value = "2";
         document.getElementById("Listing_Price").value = "3000000";
-        document.getElementById("Listing_Region").value = "Ивановская область";
-        document.getElementById("Listing_City").value = "Иваново";
-        document.getElementById("Listing_Street").value = "ул. Шошина";
-        document.getElementById("Listing_BuildingNumber").value = "4";
-        document.getElementById("Listing_Flat").value = "6";
     }
+
+    //Поиск при нажатии Enter
+    function initKeyBindings(){  
+        $("input").on("keydown",function search(e) {
+            if(e.keyCode == 13) {
+                centerMap();
+            }
+        });
+    }
+
 </script>
