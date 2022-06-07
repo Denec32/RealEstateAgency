@@ -83,11 +83,9 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">О Квартире</h5>
-            <div class="row">
-                <div class="form-floating">
-                    @Html.TextAreaFor(m => m.Listing.Description, new { @class = "form-control", @required = "required" })
-                    @Html.LabelFor(m => m.Listing.Description, "Описание")
-                </div>   
+             <div class="form-floating">
+                @Html.TextAreaFor(m => m.Listing.Description, new { @class = "form-control", @required = "required", @placeholder = "description" })
+                @Html.LabelFor(m => m.Listing.Description, "Описание")  
             </div>
         </div>
     </div>

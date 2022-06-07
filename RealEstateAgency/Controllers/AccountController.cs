@@ -26,7 +26,7 @@ namespace RealEstateAgency.Controllers
         {
             return View();
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
@@ -39,9 +39,10 @@ namespace RealEstateAgency.Controllers
                     PasswordConfirm = model.PasswordConfirm,
                     PhoneNumber = model.PhoneNumber,
                     FirstName = model.FirstName,
-                    LastName = model.LastName             
+                    LastName = model.LastName
                 };
-                var user = new User {
+                var user = new User
+                {
                     Email = model.Email,
                     UserName = model.Email,
                     PhoneNumber = model.PhoneNumber,
@@ -49,7 +50,7 @@ namespace RealEstateAgency.Controllers
                     LastName = model.LastName
                 };
                 try
-                { 
+                {
                     var request = await _userService.RegisterUser(postModel);
                 }
                 catch (ApiException ex)
@@ -93,7 +94,8 @@ namespace RealEstateAgency.Controllers
                 }
 
                 var selected = listings.Where(l => ids.Contains(l.Id)).ToList();
-                var fpm = new FavouriteViewModel { 
+                var fpm = new FavouriteViewModel
+                {
                     User = user,
                     Listings = selected
                 };
@@ -134,7 +136,7 @@ namespace RealEstateAgency.Controllers
             if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                User user =  _userService.GetUser(userId).Result;
+                User user = _userService.GetUser(userId).Result;
                 return View(user);
             }
             return View();
@@ -161,7 +163,7 @@ namespace RealEstateAgency.Controllers
 
         public async Task<IActionResult> UpdateUserAsync(User user)
         {
-            
+
             await _userService.UpdateUser(user);
             return RedirectToAction("Index", "Account");
         }
@@ -199,10 +201,29 @@ namespace RealEstateAgency.Controllers
             {
                 ListingId = id,
                 UserId = currentUserId
-            }; 
+            };
 
             await _userService.PostFavourite(fm);
             return true;
+        }
+
+        public async Task<bool> DeleteFavourite(int id)
+        {
+            string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var favs = _userService.GetFavourites(currentUserId).Result.ToList();
+
+            var fav = favs.FirstOrDefault(x => x.ListingId == id);
+
+            if (fav == null)
+            {
+                return false;
+            }
+            else
+            {
+                await _userService.DeleteFavourite(fav.Id);
+                return true;
+            }
         }
     }
 }

@@ -46,6 +46,13 @@ namespace RealEstateAgencyService.Controllers
                 ListingId = fvm.ListingId
             };
 
+            var row = await db.Favourites.FirstOrDefaultAsync(x=> x.UserId == favourite.UserId && x.ListingId == favourite.ListingId);
+
+            if (row != null)
+            {
+                return BadRequest();
+            }
+
             db.Favourites?.Add(favourite);
 
             await db.SaveChangesAsync();

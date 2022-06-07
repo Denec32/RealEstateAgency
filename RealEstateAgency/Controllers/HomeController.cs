@@ -9,21 +9,38 @@ namespace RealEstateAgency.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IRealEstateAgencyServiceAPI _service;
-        public HomeController(IRealEstateAgencyServiceAPI api)
+        private readonly IRealEstateAgencyServiceAPI _listingService;
+        private readonly IUserIdentityAPI _userService;
+        public HomeController(IRealEstateAgencyServiceAPI listingService, IUserIdentityAPI userService)
         {
-            _service = api;
+            _listingService = listingService;
+            _userService = userService;
         }
 
         public IActionResult Index()
         {
-            List<ListingModel> lm = _service.GetListingModel().Result.ToList();
+            List<ListingModel> lm = _listingService.GetListingModel().Result.ToList();
             List<ListingModel> selected = lm.Where(x => x.ListingStatus.Id == 1).ToList();
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<Favourite> favs = _userService.GetFavourites(userId).Result.ToList();
+
+            foreach (var favouriteListing in favs)
+            {
+                for (int i = 0; i < selected.Count; i++)
+                {
+                    if (selected[i].Listing != null && selected[i].Listing.Id == favouriteListing.ListingId)
+                    {
+                        selected[i].IsFavourite = true;
+                    }
+                }
+            }
+
             return View(selected);
         }
         public IActionResult Listing(int id)
         {
-            ListingModel lm = _service.GetListingModel(id).Result;
+            ListingModel lm = _listingService.GetListingModel(id).Result;
 
             return View(lm);
         }
@@ -53,8 +70,8 @@ namespace RealEstateAgency.Controllers
         {
             if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
-                Listing listing = _service.GetListing(id).Result;
-                List<ListingStatus> statuses = _service.GetListingStatuses().Result.ToList();
+                Listing listing = _listingService.GetListing(id).Result;
+                List<ListingStatus> statuses = _listingService.GetListingStatuses().Result.ToList();
 
                 if (listing.ListingStatusId == statuses[0].Id)
                 {
@@ -65,7 +82,7 @@ namespace RealEstateAgency.Controllers
                     listing.ListingStatusId = statuses[0].Id;
                 }
 
-                await _service.UpdateListing(listing);
+                await _listingService.UpdateListing(listing);
             }
             return RedirectToAction("Index", "Account");
         }
@@ -73,7 +90,7 @@ namespace RealEstateAgency.Controllers
         {
             if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
-                await _service.DeleteListing(id);
+                await _listingService.DeleteListing(id);
             }
             return RedirectToAction("Index", "Account");
         }
@@ -109,7 +126,7 @@ namespace RealEstateAgency.Controllers
                 model.Listing.RealEstatePhotos.Add(photo);
             }
 
-            await _service.PostListing(model.Listing);
+            await _listingService.PostListing(model.Listing);
 
             return View(model);
         }
@@ -118,7 +135,7 @@ namespace RealEstateAgency.Controllers
         {
             if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
-                var list = _service.GetListing(id).Result;
+                var list = _listingService.GetListing(id).Result;
                 return View(list);
             }
             else
@@ -133,7 +150,7 @@ namespace RealEstateAgency.Controllers
             listing.Created = DateTime.Now;
             listing.ListingStatusId = 1;
 
-            _service.UpdateListing(listing);
+            _listingService.UpdateListing(listing);
 
             return View(listing);
         }
