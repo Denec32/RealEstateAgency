@@ -60,25 +60,28 @@
             <p class="card-text"><small class="text-muted">Дата добавления: @item.Listing.Created.ToString("dd MMM yyyy", new CultureInfo("ru-RU"))</small></p>
             <div>
                 <a class = "btn btn-success card-text" href = "~/Home/Listing/@item.Listing.Id">Открыть объявление</a>
-                @if (item.IsFavourite == true)
+                @if (item.IsOwned == false)
                 {
-                    <a class = "btn btn-light card-text border" id="fav-button" onclick="addToFavourites(@item.Listing.Id, this)" style="display: none;">
-                        <i class="fa-solid fa-heart fa-beat" id="fav-icon" style="color: grey; --fa-animation-duration: 1.5s;"></i>
-                    </a>
+                    @if (item.IsFavourite == true)
+                    {
+                        <a class = "btn btn-light card-text border" id="fav-button" onclick="addToFavourites(@item.Listing.Id, this)" style="display: none;">
+                            <i class="fa-solid fa-heart fa-beat" id="fav-icon" style="color: grey; --fa-animation-duration: 1.5s;"></i>
+                        </a>
 
-                    <a class = "btn btn-light card-text border" id="fav-button" onclick="removeFromFavourites(@item.Listing.Id, this)">
-                        <i class="fa-solid fa-heart fa-beat" id="fav-icon" style="color: red;"></i>
-                    </a>
-                }
-                else
-                {
-                    <a class = "btn btn-light card-text border" id="fav-button" onclick="addToFavourites(@item.Listing.Id, this)">
-                        <i class="fa-solid fa-heart fa-beat" id="fav-icon" style="color: grey; --fa-animation-duration: 1.5s;"></i>
-                    </a>
+                        <a class = "btn btn-light card-text border" id="fav-button" onclick="removeFromFavourites(@item.Listing.Id, this)">
+                            <i class="fa-solid fa-heart fa-beat" id="fav-icon" style="color: red;"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <a class = "btn btn-light card-text border" id="fav-button" onclick="addToFavourites(@item.Listing.Id, this)">
+                            <i class="fa-solid fa-heart fa-beat" id="fav-icon" style="color: grey; --fa-animation-duration: 1.5s;"></i>
+                        </a>
 
-                    <a class = "btn btn-light card-text border" id="fav-button" onclick="removeFromFavourites(@item.Listing.Id, this)" style="display: none;">
-                        <i class="fa-solid fa-heart fa-beat" id="fav-icon" style="color: red;"></i>
-                    </a>
+                        <a class = "btn btn-light card-text border" id="fav-button" onclick="removeFromFavourites(@item.Listing.Id, this)" style="display: none;">
+                            <i class="fa-solid fa-heart fa-beat" id="fav-icon" style="color: red;"></i>
+                        </a>
+                    }
                 }
             </div>
         </div>

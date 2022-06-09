@@ -36,6 +36,14 @@ namespace RealEstateAgency.Controllers
                 }
             }
 
+            foreach (var item in selected)
+            {
+                if (userId == item.User.Id)
+                {
+                    item.IsOwned = true;
+                }
+            }
+
             return View(selected);
         }
         public IActionResult Listing(int id)

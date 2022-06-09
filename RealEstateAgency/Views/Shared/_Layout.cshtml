@@ -9,10 +9,13 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/RealEstateAgency.styles.css" asp-append-version="true" />
+    <script src="https://kit.fontawesome.com/d1ac7949f1.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white box-shadow mb-1" style="padding-left: 15px; padding-right: 15px;">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white mb-1" style="padding-left: 15px; padding-right: 15px;">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Агентство Недвижимости</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -22,20 +25,30 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Главная</a>
-                        </li>   
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CreateListing">Разместить объявление</a>
-                        </li>                  
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CreateListing"><i class="fa-solid fa-circle-plus"></i> Разместить объявление</a>
+                        </li>
+                        @if (User.Identity is not null && User.Identity.IsAuthenticated && User.IsInRole("admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Buildings" asp-action="Index"><i class="fa-solid fa-building"></i> Управление домами</a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav ms-auto">
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User.Identity is not null && User.Identity.IsAuthenticated)
                         {
-
-                            <li class="nav-item d-sm-inline-flex">
-                                <a id="firstName" class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Index"></a>
+                            <li class="nav-item">
+                                <div class="dropdown">
+                                <a id="firstName" class="nav-link text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"></a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Index"><i class="fa-solid fa-gear"></i> Настройки профиля</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Index"><i class="fa-solid fa-list"></i> Мои объявления</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Favourites"><i class="fa-solid fa-heart"></i> Избранное</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout" style="color:red;"><i class="fa-solid fa-right-from-bracket"></i> Выйти</a></li>
+                                    </ul>
+                                </div>
                             </li>
-
                         }
                         else
                         {
@@ -44,7 +57,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Регистрация</a>
-                            </li>
+                            </li>                            
                         }
                      </ul>
                 </div>
@@ -73,18 +86,27 @@
         padding-left: 0rem;
         padding-right: 0rem;
         padding-bottom: 0rem;
-        overflow: hidden;
+        <!--overflow: hidden;-->
     }   
 
     body {
         font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial;
 
     }
+
+    nav {
+        padding-right: 2rem !important;
+        padding-left: 2rem !important;
+    }
+
+    .dropdown-menu {
+        min-width: 15rem;
+        font-size: 0.9rem;
+    }
 </style>
 
 <script>
-
-    var item = document.getElementById('firstName');
+    //var item = document.getElementById('firstName');
     if("@User.Identity.IsAuthenticated" == "True")
     {
     var fullName = '@User.FindFirstValue(ClaimTypes.NameIdentifier)';
@@ -93,7 +115,7 @@
         data: { id: fullName},
         url: '/Account/GetFirstName?handler=FirstName',
         success: function (result) {
-            $('#firstName').html(result);
+            $('#firstName').html("<i class=\"fa-solid fa-user\"></i> " + result);
         }
     });
     }

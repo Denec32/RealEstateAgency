@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/RealEstateAgency.styles.css" asp-append-version="true" />
+    <script src="https://kit.fontawesome.com/d1ac7949f1.js" crossorigin="anonymous"></script>
+
 </head>
 <body style="height: auto;">
     <header>
@@ -22,12 +24,12 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CreateListing">Разместить объявление</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CreateListing"><i class="fa-solid fa-circle-plus"></i> Разместить объявление</a>
                         </li>
                         @if (User.Identity is not null && User.Identity.IsAuthenticated && User.IsInRole("admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Buildings" asp-action="Index">Управление домами</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Buildings" asp-action="Index"><i class="fa-solid fa-building"></i> Управление домами</a>
                             </li>
                         }
                     </ul>
@@ -35,7 +37,16 @@
                         @if (User.Identity is not null && User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a id="firstName" class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Index"></a>
+                                <div class="dropdown">
+                                <a id="firstName" class="nav-link text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"></a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Index"><i class="fa-solid fa-gear"></i> Настройки профиля</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Index"><i class="fa-solid fa-list"></i> Мои объявления</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Favourites"><i class="fa-solid fa-heart"></i> Избранное</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout" style="color:red;"><i class="fa-solid fa-right-from-bracket"></i> Выйти</a></li>
+                                    </ul>
+                                </div>
                             </li>
                         }
                         else
@@ -65,10 +76,11 @@
 </body>
 
 <style>
+    
     .container-fluid {
         padding-left: 0rem;
         padding-right: 0rem;
-        overflow: hidden;
+        <!--overflow: hidden;-->
     }   
 
     footer {
@@ -80,13 +92,25 @@
         bottom: 0;
     }
     html, body {
-        margin: 0; height: 100%; overflow: hidden
+        margin: 0; 
+        height: 100%; 
+        overflow: hidden;
     }
-  
+
+    nav {
+        padding-right: 2rem !important;
+        padding-left: 2rem !important;
+    }
+
+    .dropdown-menu {
+        min-width: 15rem;
+        font-size: 0.9rem;
+    }
+    
 </style>
 
 <script>
-    var item = document.getElementById('firstName');
+    //var item = document.getElementById('firstName');
     if("@User.Identity.IsAuthenticated" == "True")
     {
         var fullName = '@User.FindFirstValue(ClaimTypes.NameIdentifier)';
@@ -95,7 +119,7 @@
             data: { id: fullName},
             url: '/Account/GetFirstName?handler=FirstName',
             success: function (result) {
-                $('#firstName').html(result);
+                $('#firstName').html("<i class=\"fa-solid fa-user\"></i> " + result);
             }
         });
     }

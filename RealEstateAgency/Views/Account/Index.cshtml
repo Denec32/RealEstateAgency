@@ -5,7 +5,6 @@
     ViewData["Title"] = "Личный кабинет";
 }
  @model User;
-<script src="https://kit.fontawesome.com/d1ac7949f1.js" crossorigin="anonymous"></script>
 
 @if (User.Identity.IsAuthenticated)
 {
@@ -41,9 +40,6 @@
                 <div class="d-inline mb-3">
                     <button type="submit" class="btn btn-primary float-right">Обновить Данные</button>
                 </div>
-            </form>
-            <form method="post" asp-controller="Account" asp-action="Logout">
-                <button class = "btn btn-danger" type="submit">Выход</button>
             </form>
         </div>
     </div>
