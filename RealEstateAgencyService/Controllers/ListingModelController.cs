@@ -33,6 +33,7 @@ namespace RealEstateAgencyService.Controllers
                     ListingStatus = await db.ListingStatuses.FirstOrDefaultAsync(x => x.Id == item.ListingStatusId),
 
                     RealEstatePhotos = photos.Where(x => x.ListingId == item.Id).ToList()
+                    
                 };
                 list.Add(listingModel);
             }
