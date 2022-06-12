@@ -11,10 +11,12 @@ namespace RealEstateAgency.Controllers
     {
         private readonly IRealEstateAgencyServiceAPI _listingService;
         private readonly IUserIdentityAPI _userService;
-        public HomeController(IRealEstateAgencyServiceAPI listingService, IUserIdentityAPI userService)
+        private readonly IBuilding _buildingService;
+        public HomeController(IRealEstateAgencyServiceAPI listingService, IUserIdentityAPI userService, IBuilding buildingService)
         {
             _listingService = listingService;
             _userService = userService;
+            _buildingService = buildingService;
         }
 
         public IActionResult Index()
@@ -25,6 +27,7 @@ namespace RealEstateAgency.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             List<Favourite> favs = _userService.GetFavourites(userId).Result.ToList();
 
+            // Check if listing is in favourites
             foreach (var favouriteListing in favs)
             {
                 for (int i = 0; i < selected.Count; i++)
@@ -36,6 +39,7 @@ namespace RealEstateAgency.Controllers
                 }
             }
 
+            // Check if user owns a listing
             foreach (var item in selected)
             {
                 if (userId == item.User.Id)
@@ -68,7 +72,6 @@ namespace RealEstateAgency.Controllers
         {
             if (User.Identity is not null && User.Identity.IsAuthenticated)
             {
-
                 return View();
             }
             return RedirectToAction("Index", "Home");
@@ -112,9 +115,33 @@ namespace RealEstateAgency.Controllers
 
             model.Listing.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             model.Listing.Created = DateTime.Now;
-            model.Listing.ListingStatusId = 1;
 
-            model.Listing.BuildingId = 1;
+            var status = _listingService.GetListingStatuses().Result.ToList().FirstOrDefault(x => x.Status == "Активен");
+            if (status is null)
+            {
+                return RedirectToAction("Error", "Account");
+            }
+            model.Listing.ListingStatusId = status.Id;
+
+            var building = _buildingService.GetBuildings().Result.FirstOrDefault(x => x.Region == model.Listing.Region && x.City == model.Listing.City
+            && x.BuildingNumber == model.Listing.BuildingNumber && x.Street == model.Listing.Street);
+
+            if (building is null)
+            {
+                building = new Building
+                {
+                    Region = model.Listing.Region,
+                    City = model.Listing.City,
+                    Street = model.Listing.Street,
+                    BuildingNumber = model.Listing.BuildingNumber,
+                };
+                await _buildingService.PostBuilding(building);
+
+                building = _buildingService.GetBuildings().Result.FirstOrDefault(x => x.Region == model.Listing.Region && x.City == model.Listing.City
+                && x.BuildingNumber == model.Listing.BuildingNumber && x.Street == model.Listing.Street);
+            }
+
+            model.Listing.BuildingId = building.Id;
 
             model.Listing.RealEstatePhotos = new List<RealEstatePhoto>();
             foreach (var item in model.Photos)
