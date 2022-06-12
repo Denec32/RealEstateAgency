@@ -115,7 +115,12 @@
         data: { id: fullName},
         url: '/Account/GetFirstName?handler=FirstName',
         success: function (result) {
-            $('#firstName').html("<i class=\"fa-solid fa-user\"></i> " + result);
+            if ('@User.IsInRole("admin")') {
+                $('#firstName').html("<i class=\"fa-solid fa-face-smile\"></i> " + result);
+            }
+            else { 
+                $('#firstName').html("<i class=\"fa-solid fa-user\"></i> " + result);
+            }
         }
     });
     }
